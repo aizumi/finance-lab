@@ -30,6 +30,9 @@
         th, td { white-space: nowrap; border-bottom: 1px solid #dee2e6 !important; }
         .loading { text-align: center; padding: 50px; }
         .company-name-cell { display: inline-block; white-space: nowrap; }
+        @media (max-width: 767px) {
+            .company-name-cell { max-width: 4.5em; overflow: hidden; text-overflow: ellipsis; font-size: 0.8rem; }
+        }
     </style>
 </head>
 <body>
@@ -160,7 +163,10 @@ function initApp(results) {
         data: data,
         columns: headers.map(h => {
             const isVisible = visibleCols.includes(h);
-            if (h === '会社名') return { data: h, visible: isVisible, render: (d, t, r) => `<a href="https://finance.yahoo.co.jp/quote/${r['銘銘柄コード']}.T" target="_blank" class="stock-link"><span class="company-name-cell">${d}</span></a>` };
+            if (h === '会社名') return { data: h, visible: isVisible, render: (d, t, r) => {
+                const displayName = window.innerWidth < 768 ? d.substring(0, 4) : d;
+                return `<a href="https://finance.yahoo.co.jp/quote/${r['銘柄コード']}.T" target="_blank" class="stock-link"><span class="company-name-cell">${displayName}</span></a>`;
+            } };
             return { data: h, visible: isVisible, defaultContent: "-" };
         }),
         language: { url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/ja.json" },
