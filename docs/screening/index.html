@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>日本株スクリーナー Pro</title>
+    <title>日本株スクリーナー</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.bootstrap5.min.css">
@@ -15,27 +15,29 @@
         .update-date { font-size: 0.8rem; color: #6c757d; }
         .filter-panel { border: 1px solid #dee2e6; border-radius: 8px; overflow: hidden; margin-bottom: 15px; }
         .search-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; padding: 10px; }
-        .search-item { display: flex; flex-direction: column; }
         .search-item label { font-weight: bold; margin-bottom: 2px; font-size: 0.75rem; color: #444; }
         
-        /* 固定列の背景色と境界線 */
-        #stockTable thead th { background-color: #212529 !important; color: #ffffff !important; white-space: nowrap; z-index: 5; }
-        /* 会社名列（固定列）がスクロールした時に透けないように白背景を強制 */
-        #stockTable tbody td:first-child { background-color: #fff !important; z-index: 2; }
+        /* 固定列の影 */
+        .dtfc-fixed-left {
+            background-color: #fff !important;
+            box-shadow: 4px 0 8px rgba(0,0,0,0.1);
+            z-index: 4;
+            border-right: 1px solid #dee2e6 !important;
+        }
+
+        #stockTable thead th { background-color: #212529 !important; color: #ffffff !important; white-space: nowrap; z-index: 5; text-align: center; }
         .stock-link { color: #0d6efd; text-decoration: none; font-weight: bold; }
-        
-        /* テーブルのレイアウト調整 */
-        .dataTables_wrapper { width: 100%; margin: 0 auto; }
         th, td { white-space: nowrap; border-bottom: 1px solid #dee2e6 !important; }
         .loading { text-align: center; padding: 50px; }
+        .company-name-cell { display: inline-block; white-space: nowrap; }
     </style>
 </head>
 <body>
 
 <div class="container-custom">
     <div class="header-area">
-        <h5 class="text-primary m-0">📈 日本株スクリーナー</h5>
-        <span id="lastUpdate" class="update-date">読み込み中...</span>
+        <h5 class="text-dark fw-bold m-0">📉 日本株スクリーナー</h5>
+        <span id="lastUpdate" class="update-date">読込中...</span>
     </div>
 
     <div class="filter-panel">
@@ -60,11 +62,9 @@
         </div>
     </div>
 
-    <div id="loading" class="loading">
-        <div class="spinner-border text-primary" role="status"></div>
-    </div>
+    <div id="loading" class="loading"><div class="spinner-border text-primary"></div></div>
 
-    <div id="tableWrapper" style="visibility:hidden; height:0;">
+    <div id="tableWrapper" style="display:none;">
         <table id="stockTable" class="table table-hover table-bordered w-100 mb-0">
             <thead><tr id="tableHeader"></tr></thead>
             <tbody></tbody>
@@ -89,13 +89,11 @@ const INITIAL_VISIBLE = ['会社名', '銘柄コード', '業種', '時価総額
 
 let table;
 
-// 1. CSV更新日時
 fetch(CSV_URL, { method: 'HEAD' }).then(res => {
     const lm = res.headers.get('Last-Modified');
     if (lm) $('#lastUpdate').text('最終更新：' + new Date(lm).toLocaleString());
 });
 
-// 2. 数値範囲フィルタ
 $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
     let match = true;
     $('#searchInputs .search-item[data-type="range"]').each(function() {
@@ -109,12 +107,9 @@ $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
     return match;
 });
 
-// 3. データ取得
 Papa.parse(CSV_URL, {
     download: true, header: true, dynamicTyping: true, skipEmptyLines: true,
-    complete: function(results) {
-        initApp(results);
-    }
+    complete: function(results) { initApp(results); }
 });
 
 function initApp(results) {
@@ -139,60 +134,44 @@ function initApp(results) {
 
     const params = new URLSearchParams(window.location.search);
     const visibleCols = params.get('cols') ? params.get('cols').split(',') : INITIAL_VISIBLE;
+    const marketCapIdx = headers.indexOf('時価総額');
 
-    // ヘッダーと検索窓の生成
     headers.forEach((h, i) => {
         $('#tableHeader').append(`<th>${h}</th>`);
-        
         if (SELECT_COLS.includes(h) || h === '決算月') {
             let options = [...new Set(data.map(d => d[h]))].filter(Boolean);
             h === '決算月' ? options.sort((a,b)=>parseInt(a)-parseInt(b)) : options.sort();
             let selectHtml = `<div class="search-item" data-type="select" data-col-idx="${i}" data-key="${h}"><label>${h}</label><select class="form-select form-select-sm select-input"><option value="">全て</option>`;
-            options.forEach(opt => {
-                selectHtml += `<option value="${opt}" ${params.get(h) === String(opt) ? 'selected' : ''}>${opt}</option>`;
-            });
+            options.forEach(opt => { selectHtml += `<option value="${opt}" ${params.get(h) === String(opt) ? 'selected' : ''}>${opt}</option>`; });
             $('#searchInputs').append(selectHtml + `</select></div>`);
         } else if (TEXT_SEARCH_COLS.includes(h)) {
             $('#searchInputs').append(`<div class="search-item" data-type="text" data-col-idx="${i}" data-key="${h}"><label>${h}</label><input type="text" class="form-control form-control-sm text-input" value="${params.get(h)||''}" placeholder="検索"></div>`);
         } else if (typeof data[0][h] === 'number') {
             $('#searchInputs').append(`<div class="search-item" data-type="range" data-col-idx="${i}" data-key="${h}"><label>${h}${OKU_COLS.includes(h)?'(億)':(PERCENT_COLS.includes(h)?'(%)':'')}</label><div class="range-inputs d-flex gap-1"><input type="number" step="any" class="form-control form-control-sm min-input" value="${params.get(h+'_min')||''}" placeholder="最小"><input type="number" step="any" class="form-control form-control-sm max-input" value="${params.get(h+'_max')||''}" placeholder="最大"></div></div>`);
         }
-        
         const active = visibleCols.includes(h) ? 'btn-primary' : 'btn-outline-secondary';
         $('#columnToggles').append(`<button class="btn ${active} btn-sm col-btn" data-column="${i}" data-name="${h}">${h}</button>`);
     });
 
-    // 表示を整えてから初期化
     $('#loading').hide();
-    $('#tableWrapper').css({ visibility: 'visible', height: 'auto' });
+    $('#tableWrapper').show();
 
     table = $('#stockTable').DataTable({
         data: data,
         columns: headers.map(h => {
-            if (h === '会社名') return { data: h, render: (d, t, r) => `<a href="https://finance.yahoo.co.jp/quote/${r['銘柄コード']}.T" target="_blank" class="stock-link">${d}</a>` };
-            return { data: h, defaultContent: "-" };
+            const isVisible = visibleCols.includes(h);
+            if (h === '会社名') return { data: h, visible: isVisible, render: (d, t, r) => `<a href="https://finance.yahoo.co.jp/quote/${r['銘銘柄コード']}.T" target="_blank" class="stock-link"><span class="company-name-cell">${d}</span></a>` };
+            return { data: h, visible: isVisible, defaultContent: "-" };
         }),
         language: { url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/ja.json" },
         scrollX: true,
         fixedColumns: { leftColumns: 1 },
         pageLength: 50,
         dom: 'rtip',
-        autoWidth: false
+        autoWidth: false,
+        order: marketCapIdx !== -1 ? [[marketCapIdx, 'desc']] : []
     });
 
-    // 初期フィルタ適用
-    headers.forEach((h, i) => table.column(i).visible(visibleCols.includes(h)));
-    $('.text-input, .select-input').each(function() {
-        if(this.value) {
-            const idx = $(this).closest('.search-item').data('col-idx');
-            if($(this).hasClass('select-input')) table.column(idx).search('^' + $.fn.dataTable.util.escapeRegex(this.value) + '$', true, false);
-            else table.column(idx).search(this.value);
-        }
-    });
-    table.draw();
-    table.columns.adjust();
-
-    // イベントリスナー
     $('.text-input, .select-input, .min-input, .max-input').on('keyup change', function() {
         const $item = $(this).closest('.search-item');
         const idx = $item.data('col-idx');
@@ -208,7 +187,7 @@ function initApp(results) {
         const vis = !col.visible();
         col.visible(vis);
         $(this).toggleClass('btn-primary', vis).toggleClass('btn-outline-secondary', !vis);
-        table.columns.adjust().draw();
+        table.columns.adjust().draw(false);
         updateURL();
     });
 }
@@ -218,7 +197,8 @@ function updateURL() {
     $('.search-item').each(function() {
         const key = $(this).data('key');
         if ($(this).data('type') === 'range') {
-            const min = $(this).find('.min-input').val(), max = $(this).find('.max-input').val();
+            const min = $(this).find('.min-input').val();
+            const max = $(this).find('.max-input').val();
             if(min) params.set(key + '_min', min);
             if(max) params.set(key + '_max', max);
         } else {
@@ -233,7 +213,7 @@ function updateURL() {
 }
 
 function clearFilters() { window.location.href = window.location.pathname; }
-function copyURL() { navigator.clipboard.writeText(window.location.href).then(() => alert("共有用URLをコピーしました")); }
+function copyURL() { navigator.clipboard.writeText(window.location.href).then(() => alert("URLをコピーしました")); }
 </script>
 </body>
 </html>
