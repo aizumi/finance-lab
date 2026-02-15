@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>最強寄り付きエントリー戦略ガイド</title>
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --secondary: #f8f9fa;
+            --accent: #d93025;
+            --success: #188038;
+            --gold: #f9ab00;
+            --text: #3c4043;
+        }
+        body {
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 10px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            font-size: 1.5rem;
+            color: #202124;
+            text-align: center;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 10px;
+        }
+        .meta-info {
+            font-size: 0.85rem;
+            background: var(--secondary);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .highlight-card {
+            border: 2px solid var(--gold);
+            background: #fffdf7;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .rank-badge {
+            display: inline-block;
+            background: var(--gold);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        .stock-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #c5221f;
+            display: block;
+            margin: 5px 0;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .stat-item {
+            background: white;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #eee;
+            text-align: center;
+        }
+        .stat-label { font-size: 0.75rem; color: #70757a; display: block; }
+        .stat-value { font-weight: bold; font-size: 1.1rem; }
+        .value-up { color: var(--success); }
+        .value-down { color: var(--accent); }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+        th { background: var(--primary); color: white; padding: 10px; }
+        td { border-bottom: 1px solid #eee; padding: 10px; text-align: center; }
+        tr:nth-child(even) { background: #f8f9fa; }
+
+        .warning-box {
+            background: #fce8e6;
+            border-left: 5px solid var(--accent);
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .check-list {
+            list-style: none;
+            padding: 0;
+        }
+        .check-list li::before {
+            content: "☑";
+            color: var(--primary);
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .btn-entry {
+            display: block;
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            h1 { font-size: 1.2rem; }
+            td, th { padding: 8px 4px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📈 寄り付きエントリー最強戦略</h1>
+    
+    <div class="meta-info">
+        📅 <strong>分析期間</strong>: 2025/11/17 ～ 2026/02/13<br>
+        🔍 <strong>対象</strong>: 57銘柄のGU/GDデータ
+    </div>
+
+    <div class="highlight-card">
+        <span class="rank-badge">🏆 第1位・最強推奨</span>
+        <span class="stock-name">3110 - 日東紡績</span>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-label">期待値</span>
+                <span class="stat-value value-up">+1.199%</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">勝率</span>
+                <span class="stat-value">69.6%</span>
+            </div>
+        </div>
+        <p style="font-size: 0.9rem; margin: 5px 0;"><strong>戦略:</strong> 9:00-9:05 買い → 1時間以内に決済</p>
+        <p style="font-size: 0.8rem; color: #666;">※100万円投資で平均 11,990円の利益見込み</p>
+    </div>
+
+    <h3>🥇 高期待値グループ</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>銘柄</th>
+                <th>期待値</th>
+                <th>勝率</th>
+                <th>特徴</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>8031 三井物産</td>
+                <td class="value-up">+0.41%</td>
+                <td>64.3%</td>
+                <td>低リスク</td>
+            </tr>
+            <tr>
+                <td>8267 イオン</td>
+                <td class="value-up">+0.34%</td>
+                <td>66.7%</td>
+                <td>大GUに強</td>
+            </tr>
+            <tr>
+                <td>5713 住友鉱</td>
+                <td class="value-up">+0.45%</td>
+                <td>64.5%</td>
+                <td>安定感</td>
+            </tr>
+            <tr>
+                <td>6146 ﾃﾞｨｽｺ</td>
+                <td class="value-up">+0.26%</td>
+                <td>64.5%</td>
+                <td>ハイリターン</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="warning-box">
+        <strong>⚠️ 禁忌：GD（ギャップダウン）売り</strong>
+        <p style="font-size: 0.85rem; margin-bottom: 0;">GDは勝率が高く見えても「負け額」が大きく、期待値がマイナスになりがちです。心理的ストレスも高いため、スルーを推奨します。</p>
+    </div>
+
+    <h3>✅ 実践チェックリスト</h3>
+    <ul class="check-list">
+        <li>9:00のギャップアップ(GU)を確認したか</li>
+        <li>推奨銘柄リスト（3110等）に絞っているか</li>
+        <li><strong>1時間以内</strong>の決済を徹底できるか</li>
+        <li>逆指値（損切）を同時に入力したか</li>
+    </ul>
+
+    <h3>📊 GU期待値ランキング TOP10</h3>
+    <div style="overflow-x: auto;">
+        <table>
+            <tr style="background:#eee; color:#333;">
+                <th>順位</th>
+                <th>銘柄</th>
+                <th>期待値</th>
+                <th>勝率</th>
+            </tr>
+            <tr><td>1</td><td>3110 日東紡</td><td>+1.19%</td><td>69.6%</td></tr>
+            <tr><td>2</td><td>5803 フジクラ</td><td>+0.81%</td><td>54.5%</td></tr>
+            <tr><td>3</td><td>4062 イビデン</td><td>+0.61%</td><td>57.7%</td></tr>
+            <tr><td>4</td><td>5801 古河電</td><td>+0.46%</td><td>54.2%</td></tr>
+            <tr><td>5</td><td>5713 住友鉱</td><td>+0.45%</td><td>64.5%</td></tr>
+            <tr><td>6</td><td>7013 IHI</td><td>+0.45%</td><td>44.4%</td></tr>
+            <tr><td>7</td><td>4568 第一三共</td><td>+0.43%</td><td>52.2%</td></tr>
+            <tr><td>8</td><td>6269 三井海洋</td><td>+0.41%</td><td>54.2%</td></tr>
+            <tr><td>9</td><td>8031 三井物産</td><td>+0.41%</td><td>64.3%</td></tr>
+            <tr><td>10</td><td>8267 イオン</td><td>+0.34%</td><td>66.7%</td></tr>
+        </table>
+    </div>
+
+    <p style="font-size: 0.7rem; color: #999; text-align: center;">
+        生成日: 2026年2月16日 / 統計に基づいた戦略であり、将来の利益を保証するものではありません。
+    </p>
+</div>
+
+</body>
+</html>
